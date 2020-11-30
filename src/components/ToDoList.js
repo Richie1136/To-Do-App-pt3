@@ -12,8 +12,6 @@ function TodoList(props) {
             title={todo.title}
             completed={todo.completed}
             id={todo.id}
-            handleToggle={props.handleToggle}
-            handleDeleteTodo={props.handleDeleteTodo}
             key={todo.id}
           />
         ))}

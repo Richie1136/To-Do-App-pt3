@@ -1,8 +1,9 @@
 import React from 'react'
+import { useDispatch } from 'react-redux'
+import { toggleTodo, deleteTodo } from '../actions/todosActions'
 
-
-
-function TodoItem(props) {
+export default function TodoItem(props) {
+  const dispatch = useDispatch();
 
   return (
     <li className={props.completed ? "completed" : ""}>
@@ -11,18 +12,14 @@ function TodoItem(props) {
           className="toggle"
           type="checkbox"
           checked={props.completed}
-          onChange={() => props.handleToggle(props.id)}
+          onChange={() => dispatch(toggleTodo(props.id))}
         />
         <label>{props.title}</label>
         <button
           className="destroy"
-          onClick={() => props.handleDeleteTodo(props.id)}
+          onClick={() => dispatch(deleteTodo(props.id))}
         />
       </div>
     </li>
   );
 }
-
-
-
-export default TodoItem

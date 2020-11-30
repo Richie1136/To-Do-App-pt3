@@ -1,56 +1,21 @@
 import React, { useState } from "react";
-import { todos as todosList } from "./todos";
-import { v4 as uuid } from "uuid"
 import TodoList from './components/ToDoList'
 import { Route, Link, Switch } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { addTodo, clearCompletedTodos } from "./actions/todosActions";
 
-function App() {
 
-  const [todos, setTodos] = useState(todosList)
+function App(props) {
+
   const [inputText, setInputText] = useState("")
 
   const handleAddToDo = (event) => {
     if (event.which === 13) {
-      const newId = uuid()
-      const newTodo = {
-        "userId": 1,
-        "id": newId,
-        "title": inputText,
-        "completed": false
-      }
-
-      const newTodos = {
-        ...todos
-      }
-      newTodos[newId] = newTodo
-      setTodos(newTodos)
-      setInputText("")
-
+      props.addTodo(inputText)
+      setInputText("");
     }
-  }
+  };
 
-  const handleToggle = (id) => {
-    const newTodos = { ...todos }
-    newTodos[id].completed = !newTodos[id].completed
-    setTodos(newTodos)
-  }
-
-
-  const handleDeleteTodo = (id) => {
-    const newTodos = { ...todos }
-    delete newTodos[id]
-    setTodos(newTodos)
-  }
-
-  const handleClearCompletedToDos = () => {
-    const newTodos = { ...todos }
-    for (const todo in newTodos) {
-      if (newTodos[todo].completed) {
-        delete newTodos[todo]
-      }
-    }
-    setTodos(newTodos)
-  }
 
 
   return (
@@ -68,29 +33,23 @@ function App() {
       <Switch>
         <Route exact path="/">
           <TodoList
-            todos={Object.values(todos)}
-            handleToggle={handleToggle}
-            handleDeleteTodo={handleDeleteTodo}
+            todos={Object.values(props.todos)}
           />
         </Route>
         <Route path="/active" >
           <TodoList
-            todos={Object.values(todos).filter(todo => !todo.completed)}
-            handleToggle={handleToggle}
-            handleDeleteTodo={handleDeleteTodo}
+            todos={Object.values(props.todos).filter(todo => !todo.completed)}
           />
         </Route>
         <Route path="/completed" >
           <TodoList
-            todos={Object.values(todos).filter(todo => todo.completed)}
-            handleToggle={handleToggle}
-            handleDeleteTodo={handleDeleteTodo}
+            todos={Object.values(props.todos).filter(todo => todo.completed)}
           />
         </Route>
       </Switch>
       <footer className="footer">
         <span className="todo-count">
-          <strong>{Object.values(todos).filter(todo => !todo.completed).length}
+          <strong>{Object.values(props.todos).filter(todo => !todo.completed).length}
           </strong> item(s) left
           </span>
         <ul className="filters">
@@ -106,7 +65,7 @@ function App() {
         </ul>
         <button
           className="clear-completed"
-          onClick={() => handleClearCompletedToDos()}
+          onClick={() => props.clearCompleted()}
         >
           Clear completed</button>
       </footer>
@@ -114,6 +73,14 @@ function App() {
   );
 }
 
+const mapStateToProps = (state) => ({
+  todos: state.todos
+});
 
-export default App;
+const mapDispatchToProps = (dispatch) => ({
+  addTodo: inputText => dispatch(addTodo(inputText)),
+  clearCompleted: () => dispatch(clearCompletedTodos())
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
 
